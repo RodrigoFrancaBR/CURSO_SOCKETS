@@ -15,8 +15,49 @@ public class Cliente {
 	public Cliente(String host, int porta) {
 		this.host = host;
 		this.porta = porta;
+	}	
+	
+	public void criarConexao() {
+		
+		System.out.println("Tentando criar uma conexao.");
+		
+		try {
+			socket = new Socket(host, porta);
+			System.out.println("Conexao criada com o host: " + host + ":" + porta + " com sucesso");
+		} catch (IOException e) {
+			System.out.println("Erro ao criar a conexao: " + e);
+			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, e);
+		}
 	}
-
+	
+	public static void escreverMensagenParaServidor(ObjectOutputStream saida) {
+		System.out.println("Tentando enviar mensagen parao servidor.");
+		// String resultado ="Hello";
+		try {
+			saida.writeObject("Olá Servidor, Eu sou seu cliente.");
+			// output.writeUTF(resultado);
+			saida.flush();
+			System.out.println("Mensagen enviada com sucesso para o servidor.");
+		} catch (IOException e) {
+			System.out.println("Erro ao enviar mensagen para o servidor: " + e);
+			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, e);
+		}
+	}
+	
+	public static String lerMensagemDoServidor(ObjectInputStream entrada) {		
+		System.out.println("Tentando obter mensagen do servidor.");
+		String mensagem = "Sem mensagem";
+		try {
+			mensagem =  (String) entrada.readObject();
+			System.out.println("Mensagen obtida com sucesso do servidor.");			
+		} catch (ClassNotFoundException | IOException e) {
+			System.out.println("Erro ao obter mensagen do servidor: " + e);
+			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, e);			
+		}
+		return mensagem;
+	}
+	
+/*
 	public void criarConexao() {
 		System.out.println("Tentando criar uma conexao.");
 		try {
@@ -48,20 +89,45 @@ public class Cliente {
 			// Scanner teclado = new Scanner(System.in);
 			output.writeUTF(resultado);
 			output.flush();
-	/*		while (teclado.hasNextLine()) {
-				output.writeUTF(teclado.nextLine());
-				output.flush();
-			}*/
+
 			System.out.println("Mensagen enviada com sucesso para o servidor.");
 		} catch (IOException e) {
 			System.out.println("Erro ao enviar mensagen para o servidor: " + e);
 			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, e);
 		}
-	}
+	}*/
 
 	public static void main(String[] args) {
+		
+		try {
+	        // Create a connection to the server socket on the server application
+			new Cliente("localhost", 12345).criarConexao();
+	        // InetAddress host = InetAddress.getLocalHost();
+	        // Socket socket = new Socket(host.getHostName(), 7777);
 
-		new Cliente("localhost", 12345).criarConexao();
+	        // Send a message to the client application
+			ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
+			
+			
+			Cliente.escreverMensagenParaServidor(output);
+	        // ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+	        // oos.writeObject("Hello There...");
+
+	        // Read and display the response message sent by server application
+			ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
+	        // ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+	        String mensagemDoServidor = Cliente.lerMensagemDoServidor(input);
+			// String message = (String) ois.readObject();
+	        System.out.println(mensagemDoServidor);
+	        input.close();
+	        output.close();
+	        // ois.close();
+	        // oos.close();
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+
+		/*new Cliente("localhost", 12345).criarConexao();
 
 		String mensagenDoServidor = "sem mensagen";
 
@@ -83,6 +149,6 @@ public class Cliente {
 			System.out.println("Erro no método main: " + e);
 			Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, e);
 		}
+	}*/
 	}
-
 }
