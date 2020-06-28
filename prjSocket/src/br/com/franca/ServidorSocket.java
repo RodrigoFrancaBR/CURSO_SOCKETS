@@ -28,44 +28,28 @@ public class ServidorSocket {
 	}*/
 	
 	 public void tratarConexao(Socket socket) throws IOException {
-	        // * Cliente ------SOCKET-----servidor
-	        //protocolo da aplicação
-	        /*
-	        4 - Tratar a conversação entre cliente e 
-	         servidor (tratar protocolo);
-	         */
-	           
-	        
+
 	        try {
-	            /* 3 - Criar streams de entrada e saída;*/
-	         
+
 	            ObjectOutputStream output = new ObjectOutputStream(socket.getOutputStream());
 	            ObjectInputStream input = new ObjectInputStream(socket.getInputStream());
-	            
-	            /*protocolo
-	                Cliente --> HELLO
-	                Server <---- HELLO WORLD!
-	            */
-	            /*4 - Tratar a conversação entre cliente e 
-	         servidor (tratar protocolo);*/
-	            
+
 	            System.out.println("Tratando...");
+	            
 	            String msg = input.readUTF();
 	            System.out.println("Mensagem recebida: " + msg);
-	            output.writeUTF("HELLO WORLD!");
-	            output.flush();//cambio do rádio amador
 	            
-	            //4.2 - Fechar streams de entrada e saída
+	            output.writeUTF("HELLO WORLD!");
+	            
+	            output.flush();	           
 	            input.close();
 	            output.close();
-	        } catch (IOException e) {
-	            //tratamento de falhas
+	            
+	        } catch (IOException e) {	            
 	            System.out.println("Problema no tratamento da conexão com o cliente: "+socket.getInetAddress());
 	            System.out.println("Erro: " + e.getMessage());
 	            throw e;
 	        }finally{
-	            //final do tratamento do protocolo
-	            /*4.1 - Fechar socket de comunicação entre servidor/cliente*/
 	            fecharSocket(socket);
 	        }
 
